@@ -1,0 +1,62 @@
+\chapter{Methodology}
+
+\section{Experimental Setup for Data Collection}
+
+To form the co-view graph, \textbf{twenty} people had been chosen (not randomly to not induce bias), and their preferences were noted. The students selected were of varied departments including both circuit and non-circuit branches of different age and linguistic groups with varied tastes and preferences. This was done so as to eliminate any bias that might be introduced as a result of ``similar'' set of people. They were given a start movie and asked to navigate through to 10 other movies. They however were not asked to watch the movies due to their length, but instead movie \textit{trailers} were used. In this manner, a list of \textbf{ten} co-viewed movies was obtained for each movie as the start movie. There were a total of \textbf{five} sessions per participant that spanned at different times (not immediately) for over a month. The participants were also asked to tag the watched movies/trailers (user defined tags).
+
+\section{Tagging the Dataset}
+To tag the movies, a database of user submitted tags was collected. The movie tags are a combination of the set of genres of a movie and the user submitted tags. These tags were ultimately appended along with the coviews to a common csv file \texttt{coview\_movie.csv}.
+
+\section{Topical Analysis}
+\subsection{Topic Count Computation}
+
+Next, the topic count function was implemented. The topic count function for a particular movie, $V_W$ and a given topic $\tau$ returns the number of movies in the co-view graph having the same topic as the target movie. Here the random unrelated movies which might be seen by the user get a count ($c(\cdot)$ in equation \ref{eq:1}) value of \textbf{zero} hence they get a score value of zero. Hence, they are omitted.
+
+\subsection{Inverse Document Frequency (\textit{idf}) of Topics}
+
+We apply the traditional information retrieval heuristic -- inverse document frequency (\textit{idf}) on the topics. This is calculated for all the topics. This is a normalization technique which ensures that rare topics get equal priority as the common ones. This list is stored as a dictionary and the computation is \textit{done only once} so that the prediction-time overheads decrease. This component is attributed by $log(1 + df(\cdot))$ in equation \ref{eq:1}, where $df(\cdot)$ is the document frequency.
+
+\subsection{Quality Factor and Stop Words}
+
+Since the topic terms obtained from the user submitted tags and the genres \textit{do not} contain any stop-words, we need not explicitly normalize the terms during indexing and querying. So, the factor that indicates stop word removal ($\mathcal{I}_s(\cdot)$) is considered to be \textbf{one} (equation \ref{eq:1}). We assume the Quality of the video ($q(\cdot)$) to be \textbf{one} (equation \ref{eq:1}). The quality factor is based on factors like ``thumbs up'', ``thumbs down'', video popularity etc. But since these factors introduce a popularity bias, these are not added. 
+
+\begin{equation}
+\label{eq:1}
+	sc(V_W, V_R) = q(V_R) \sum \limits_{\tau \in V_W \cap V_R} \mathcal{I}_s(\tau) \cdot \frac{c(\tau, V_W)}{log(1 + df(\tau))} \cdot c(\tau, V_R)
+\end{equation}
+
+\section{Scoring}
+
+Our final function is the \textit{scoring function} derived from equation \ref{eq:1} is defined as in equation \ref{eq:2}.
+
+\begin{equation}
+\label{eq:2}
+	sc(V_W, V_R) = \sum \limits_{\tau \in V_W \cap V_R} \frac{c(\tau, V_W)}{log(1 + df(\tau))} \cdot c(\tau, V_R)
+\end{equation}
+
+This function computes the similarity score ($sc(V_W, V_R)$) between two videos $V_W$ , $V_R$. This similarity measure is calculated for all the videos compared with the current video or movie being watched. These similarity scores are then sorted in order and the videos corresponding to top \textbf{ten} similarity scores are presented to the user as watch movie recommendations. \par 
+We define a \textit{session}, to be the time until which the user chooses one of the videos recommended to the user by the system. The session starts with the user getting a random video or movie (during experiment) or the user selecting some movie. Then the above scores are generated and the videos are presented. The user can accordingly select the next movie or choose to end the session. 
+
+\section{ToViS: The Video Suggestion Model}
+
+\textbf{ToViS} is a video suggestion system that basically is a hybrid model. The model mainly focuses on topic based movie retrieval (see section 3.1 for experimental setup) combined with collaborative filtering methods to obtain near optimal recommendations. The block diagram representing the same is depicted as in Figure \ref{block}. Topic retrieval and Topic indexing are the main areas of focus in this research.
+
+\begin{figure}
+\begin{tikzpicture}
+  \node[block,fill=blue!20] (a) {Current Movie ($V_W$)};
+  \node[block,right=of a] (b) {Topic Indexing};
+  \node[block,right=of b] (c) {Topic Retrieval (\textit{idf})};
+  \node[block,right=of c] (d) {Hybrid Ranking};
+  \node[block,above=of d,fill=blue!20] (f) {Recommended Movies ($V_R$)};
+  \node[draw,inner xsep=5mm,inner ysep=5mm,fit=(b)(c),label={90:Topic Retrieval}]{};
+  \draw[line] (a)-- (b);
+  \draw[line] (b) -- node[name=u] {$$} (c);
+  \draw[line] (c) -- (d);
+  \node[block,below=2cm of u] (e) {Collaborative Filtering};
+  \draw[line] (a) |- (e);
+  \draw[line] (e) -| (d);
+  \draw[line] (d) -- (f);
+\end{tikzpicture}
+\caption{\textit{ToViS} Process Model Diagram}
+\label{block}
+\end{figure}
