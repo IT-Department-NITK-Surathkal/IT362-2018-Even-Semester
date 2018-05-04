@@ -1,0 +1,24 @@
+
+\tikzstyle{intg}=[draw,minimum size=3em,text centered,text width=6.cm]
+    \centering
+    \begin{tikzpicture}[
+      >=latex',
+      auto
+    ]
+    \node[intg] (s) {Start};
+    \node [intg] (kp) [node distance=2cm,below of=s]{Read the original query};
+    \node [intg] (kp1) [node distance=2cm,below of=kp]{Retrieve and rank the pseudo-relevant documents using Okapi-BM25};
+    \node [intg] (kp2) [node distance=2cm,below of=kp1]{Extract and rank the expansion keywords using term-scoring function(RSJ,Rocchio's weight)};
+    \node [intg] (kp3) [node distance=2cm,below of=kp2]{Add the top ranked keywords to the original query};
+    \node [intg] (kp4) [node distance=2cm,below of=kp3]{Retrieve and rank the relevant documents};
+    \node [intg] (kp5) [node distance=2cm,below of=kp4]{End};
+    \draw[->] (s) -- (kp);
+    \draw[->] (kp) -- (kp1);
+    \draw[->] (kp1) -- (kp2);
+    \draw[->] (kp2) -- (kp3);
+    \draw[->] (kp3) -- (kp4);
+    \draw[->] (kp4) -- (kp5);
+    
+    
+  \end{tikzpicture}
+  

@@ -1,0 +1,20 @@
+\begin{algorithmic}[1]
+\Procedure{Firefly algorithm}{}
+\State {Fitness function f(\~{Q})}
+\State $\text{Define light absorption coefficient} \gamma \text{ ,parameter} \alpha $
+\State $\text{Light intensity } I_i \text{ at } Q_i \text{ is determined by f(\~Q)} $
+\State {Generate an initial population of N fireflies}
+\While {\text{t < Maxiter and bestExpandedQuery still changes}}
+\For { i in 1 to N}
+\For {i in 1 to N}
+	\If {\text{f (\~{Qi}) < f (\~{Qj})}}
+    \State $\text{Move query firefly \~{Qi} to \~{Qj}}$
+    \EndIf end if
+   \State{vary attractiveness}
+   \State{Evaluate new solutions}
+\EndFor end for
+\EndFor end for
+\State $\text{Rank the fireflies and find the current best firefly}$
+\EndWhile end while
+\EndProcedure
+\end{algorithmic}
